@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © OOCS Commerce (https://www.oocscommerce.com).
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="system">
+            <group id="full_page_cache">
+                <group id="souin" translate="label" showInDefault="1" sortOrder="610">
+                    <label>Souin Configuration</label>
+                    <field id="api_path" type="text" translate="label comment" sortOrder="10" showInDefault="1" canRestore="1">
+                        <label>Purge API path</label>
+                        <comment>Souin API path on the cache hosts configured in app/etc/env.php (http_cache_hosts).</comment>
+                    </field>
+                    <depends>
+                        <field id="caching_application">148</field>
+                    </depends>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>

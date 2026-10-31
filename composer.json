@@ -1,0 +1,30 @@
+{
+    "name": "oocscommerce/module-souin-cache",
+    "description": "Souin (Caddy cache-handler) full page cache application for Magento 2",
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "license": "MIT",
+    "keywords": [
+        "magento2",
+        "magento2-module",
+        "souin",
+        "caddy",
+        "full-page-cache",
+        "performance"
+    ],
+    "require": {
+        "php": ">=7.2",
+        "magento/framework": "*",
+        "magento/module-cache-invalidate": "*",
+        "magento/module-page-cache": "*",
+        "magento/module-store": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "OOCS\\SouinCache\\": ""
+        }
+    }
+}

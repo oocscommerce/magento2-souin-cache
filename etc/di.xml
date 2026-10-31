@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © OOCS Commerce (https://www.oocscommerce.com).
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\PageCache\Model\System\Config\Source\Application">
+        <plugin name="oocs_souin_cache_application" type="OOCS\SouinCache\Plugin\PageCache\ApplicationSourcePlugin"/>
+    </type>
+</config>
