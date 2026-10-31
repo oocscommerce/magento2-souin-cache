@@ -1,5 +1,5 @@
 {
-    "name": "oocscommerce/module-souin-cache",
+    "name": "oocscommerce/magento2-souin-cache",
     "description": "Souin (Caddy cache-handler) full page cache application for Magento 2",
     "type": "magento2-module",
     "version": "0.1.0",
