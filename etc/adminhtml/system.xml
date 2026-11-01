@@ -13,7 +13,53 @@
                     <label>Souin Configuration</label>
                     <field id="api_path" type="text" translate="label comment" sortOrder="10" showInDefault="1" canRestore="1">
                         <label>Purge API path</label>
-                        <comment>Souin API path on the cache hosts configured in app/etc/env.php (http_cache_hosts).</comment>
+                        <comment>Souin API path on the cache hosts configured in app/etc/env.php (http_cache_hosts), two segments, e.g. /souin-api/souin.</comment>
+                    </field>
+                    <field id="listen" type="text" translate="label comment" sortOrder="20" showInDefault="1" canRestore="1">
+                        <label>Listen address</label>
+                        <comment>Caddyfile site address, e.g. :80 or :6081. Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="backend_host" type="text" translate="label comment" sortOrder="30" showInDefault="1" canRestore="1">
+                        <label>Backend host</label>
+                        <comment>Web server (nginx/Apache) Caddy forwards to. Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="backend_port" type="text" translate="label comment" sortOrder="40" showInDefault="1" canRestore="1">
+                        <label>Backend port</label>
+                        <validate>validate-digits</validate>
+                        <comment>Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="access_list" type="text" translate="label comment" sortOrder="50" showInDefault="1" canRestore="1">
+                        <label>Purge access list</label>
+                        <comment>IPs/CIDRs of the Magento servers allowed to purge, separated with ','. Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="trusted_proxies" type="text" translate="label comment" sortOrder="60" showInDefault="1" canRestore="1">
+                        <label>Trusted proxies</label>
+                        <comment>IPs/CIDRs (or private_ranges) of the proxies in front of Caddy whose X-Forwarded-For/X-Forwarded-Proto are trusted, separated with ','. Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="grace_period" type="text" translate="label comment" sortOrder="70" showInDefault="1" canRestore="1">
+                        <label>Grace period</label>
+                        <validate>validate-zero-or-greater validate-digits</validate>
+                        <comment>Seconds an expired page may still be served (Souin stale). Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="otter_size" type="text" translate="label comment" sortOrder="80" showInDefault="1" canRestore="1">
+                        <label>In-memory storage size</label>
+                        <validate>validate-greater-than-zero validate-digits</validate>
+                        <comment>Maximum number of entries of the Otter storage (pages and surrogate keys). Used when Redis URL is empty.</comment>
+                    </field>
+                    <field id="redis_url" type="text" translate="label comment" sortOrder="90" showInDefault="1" canRestore="1">
+                        <label>Redis server</label>
+                        <comment>host:port of a Redis server shared by all Caddy nodes, e.g. 127.0.0.1:6379. Empty: in-memory storage. Used for Caddyfile generation.</comment>
+                    </field>
+                    <field id="redis_db" type="text" translate="label" sortOrder="91" showInDefault="1" canRestore="1">
+                        <label>Redis DB</label>
+                        <validate>validate-zero-or-greater validate-digits</validate>
+                    </field>
+                    <field id="redis_password" type="obscure" translate="label" sortOrder="92" showInDefault="1">
+                        <label>Redis password</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    </field>
+                    <field id="export_caddyfile" type="button" sortOrder="100" showInDefault="1">
+                        <frontend_model>OOCS\SouinCache\Block\System\Config\Form\Field\ExportCaddyfile</frontend_model>
                     </field>
                     <depends>
                         <field id="caching_application">148</field>

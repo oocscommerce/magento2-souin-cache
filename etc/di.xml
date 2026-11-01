@@ -9,4 +9,16 @@
     <type name="Magento\PageCache\Model\System\Config\Source\Application">
         <plugin name="oocs_souin_cache_application" type="OOCS\SouinCache\Plugin\PageCache\ApplicationSourcePlugin"/>
     </type>
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="souin_caddyfile_generate" xsi:type="object">OOCS\SouinCache\Console\Command\GenerateCaddyfileCommand</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="OOCS\SouinCache\Console\Command\GenerateCaddyfileCommand">
+        <arguments>
+            <argument name="generator" xsi:type="object">OOCS\SouinCache\Model\Caddyfile\Generator\Proxy</argument>
+        </arguments>
+    </type>
 </config>

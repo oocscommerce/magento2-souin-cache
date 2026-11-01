@@ -24,6 +24,22 @@ class Data extends AbstractHelper
     public const XML_PATH_API_PATH = 'system/full_page_cache/souin/api_path';
 
     /**
+     * Settings used for Caddyfile generation, under system/full_page_cache/souin/
+     */
+    public const CADDYFILE_SETTINGS = [
+        'listen',
+        'backend_host',
+        'backend_port',
+        'access_list',
+        'trusted_proxies',
+        'grace_period',
+        'otter_size',
+        'redis_url',
+        'redis_db',
+        'redis_password',
+    ];
+
+    /**
      * @var PageCacheConfig
      */
     protected $pageCacheConfig;
@@ -68,5 +84,20 @@ class Data extends AbstractHelper
     public function getApiPath(): string
     {
         return '/' . trim((string)$this->scopeConfig->getValue(self::XML_PATH_API_PATH), '/');
+    }
+
+    /**
+     * Caddyfile generation settings, keyed as in CADDYFILE_SETTINGS
+     *
+     * @return array
+     */
+    public function getCaddyfileSettings(): array
+    {
+        $settings = [];
+        foreach (self::CADDYFILE_SETTINGS as $name) {
+            $settings[$name] = (string)$this->scopeConfig->getValue('system/full_page_cache/souin/' . $name);
+        }
+
+        return $settings;
     }
 }

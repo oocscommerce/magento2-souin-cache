@@ -11,6 +11,16 @@
             <full_page_cache>
                 <souin>
                     <api_path>/souin-api/souin</api_path>
+                    <listen>:80</listen>
+                    <backend_host>localhost</backend_host>
+                    <backend_port>8080</backend_port>
+                    <access_list>127.0.0.1/8, ::1</access_list>
+                    <trusted_proxies>private_ranges</trusted_proxies>
+                    <grace_period>300</grace_period>
+                    <otter_size>100000</otter_size>
+                    <redis_url/>
+                    <redis_db>4</redis_db>
+                    <redis_password backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
                 </souin>
             </full_page_cache>
         </system>

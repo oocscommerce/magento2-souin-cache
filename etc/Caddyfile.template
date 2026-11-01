@@ -1,0 +1,176 @@
+{
+	log default {
+		level WARN
+	}
+	admin localhost:2019
+	servers {
+		trusted_proxies static {{ trusted_proxies }}
+	}
+
+	cache {
+		api {
+			basepath {{ api_basepath }}
+			souin {
+				basepath {{ api_souin_basepath }}
+			}
+		}
+		{{ storage }}
+		allowed_http_verbs GET HEAD
+		mode bypass_request
+		ttl {{ ttl }}s
+		stale {{ grace_period }}s
+		default_cache_control no-store
+		key {
+			hash
+			hide
+			disable_body
+			disable_scheme
+			sort_query
+			headers X-Forwarded-Proto X-Souin-Vary
+		}
+		log_level warn
+	}
+}
+
+{{ listen }} {
+	@api_denied {
+		path {{ api_basepath }}/*
+		not {
+			remote_ip {{ access_list }}
+			not header X-Forwarded-For *
+		}
+	}
+
+	@api path {{ api_basepath }}/*
+
+	@cacheable {
+		method GET HEAD
+		not path_regexp bypass (/customer|/checkout|^/(pub/)?health_check\.php$|^/(pub/)?(media|static)/)
+		# not header_regexp debug Cookie (^|;\s*)(XDEBUG_SESSION|SPX_ENABLED|SPX_KEY)=
+		not {
+			path */graphql*
+			header_regexp Authorization ^Bearer
+			not header X-Magento-Cache-Id *
+		}
+	}
+
+	@untrusted_proxy not remote_ip {{ trusted_proxies }}
+
+	@accept_gzip header_regexp accept_gzip Accept-Encoding (?i)\bgzip\b
+	@no_gzip not header_regexp no_gzip Accept-Encoding (?i)\bgzip\b
+
+	@empty_query expression {http.request.uri}.endsWith('?')
+
+	route {
+		respond @api_denied "Forbidden" 403
+
+		request_header -Proxy
+		request_header @untrusted_proxy X-Forwarded-Proto {http.request.scheme}
+		request_header Host {http.request.host}
+		rewrite @empty_query {path}
+
+		encode zstd gzip
+		reverse_proxy @api localhost:2019 {
+			header_up Host localhost:2019
+		}
+
+		uri query {
+			-gclid
+			-gclsrc
+			-gad_source
+			-gbraid
+			-wbraid
+			-dclid
+			-_gl
+			-srsltid
+			-msclkid
+			-fbclid
+			-utm_source
+			-utm_medium
+			-utm_campaign
+			-utm_term
+			-utm_content
+			-utm_id
+			-mc_cid
+			-mc_eid
+		}
+
+		header {
+			-Via
+			-Age
+			defer
+		}
+
+		@html not path_regexp ^/(pub/)?(media|static)/
+		header @html {
+			Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+			-Pragma
+			-Expires
+			-X-Magento-Tags
+			-Surrogate-Key
+			-Souin-Cache-Control
+			-Cache-Status
+			-X-Powered-By
+			-Server
+			defer
+		}
+
+		header X-Magento-Cache-Debug UNCACHEABLE {
+			match header Souin-Cache-Control *no-store*
+			defer
+		}
+		header X-Magento-Cache-Debug UNCACHEABLE {
+			match header !Cache-Status
+			defer
+		}
+		header X-Magento-Cache-Debug MISS {
+			match header Cache-Status "*; stored*"
+			defer
+		}
+		header X-Magento-Cache-Debug UNCACHEABLE {
+			match header Cache-Status *fwd=*
+			defer
+		}
+		header X-Magento-Cache-Debug HIT {
+			match header Cache-Status "*; hit;*"
+			defer
+		}
+
+		request_header X-Souin-Vary {http.request.cookie.X-Magento-Vary}
+		request_header @accept_gzip Accept-Encoding gzip
+		request_header @no_gzip -Accept-Encoding
+
+		# cache-handler v0.17.0 ignores a global cache_keys
+		cache @cacheable {
+			cache_keys {
+				# Souin v1.7.9 drops the first entry
+				^$ {
+				}
+				^/graphql {
+					hash
+					hide
+					disable_body
+					disable_scheme
+					sort_query
+					headers X-Forwarded-Proto X-Souin-Vary X-Magento-Cache-Id Store Content-Currency
+				}
+			}
+		}
+
+		header {
+			match header Souin-Cache-Control *public*
+			-Set-Cookie
+			defer
+		}
+
+		reverse_proxy {{ backend_host }}:{{ backend_port }} {
+			header_up -X-Souin-Vary
+
+			health_uri /health_check.php
+			health_interval 5s
+			health_timeout 2s
+			health_fails 3
+			health_passes 1
+		}
+	}
+}
