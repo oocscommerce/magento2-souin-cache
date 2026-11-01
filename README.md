@@ -132,7 +132,7 @@ PURGE /souin-api/souin
 Surrogate-Key: cat_p_1, cat_c_3
 ```
 
-A full flush is `PURGE /souin-api/souin/flush`. Purge errors are logged to `var/log/system.log`,
+A full flush is `PURGE /souin-api/souin/.+` (every key; `/flush` would close the Redis connection of Souin v1.7.9). Purge errors are logged to `var/log/system.log`,
 successful purges to `var/log/debug.log` (`cache_invalidate`).
 
 ## Notes

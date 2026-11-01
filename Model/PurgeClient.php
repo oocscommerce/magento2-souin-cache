@@ -18,7 +18,7 @@ use OOCS\SouinCache\Helper\Data;
 /**
  * Send purge requests to the Souin API of every host in http_cache_hosts.
  *
- * By tags: PURGE {api path} with "Surrogate-Key: tag1, tag2"; everything: PURGE {api path}/flush
+ * By tags: PURGE {api path} with "Surrogate-Key: tag1, tag2"; everything: PURGE {api path}/.+
  */
 class PurgeClient
 {
@@ -96,13 +96,16 @@ class PurgeClient
     }
 
     /**
-     * Purge the whole cache and its surrogate keys storage
+     * Purge the whole cache, surrogate keys included (they live in the same storage)
+     *
+     * Deletes every key matching the ".+" regexp. Not {api path}/flush: it resets the surrogate storage, which
+     * closes the Redis client for good (Souin v1.7.9, storages v0.0.22).
      *
      * @return bool
      */
     public function purgeAll(): bool
     {
-        return $this->send(rtrim($this->helper->getApiPath(), '/') . '/flush', []);
+        return $this->send(rtrim($this->helper->getApiPath(), '/') . '/.+', []);
     }
 
     /**

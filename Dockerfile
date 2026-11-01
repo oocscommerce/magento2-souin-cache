@@ -4,18 +4,32 @@
 #   docker build -t souin-caddy .   (from this module directory)
 #   docker run -d -p 80:80 -v /path/to/Caddyfile:/etc/caddy/Caddyfile:ro souin-caddy
 #
-# Latest plugin versions by default; tested with cache-handler v0.17.0 and storages v0.0.22, pin them with
-#   --build-arg CACHE_HANDLER_VERSION=v0.17.0 --build-arg STORAGES_VERSION=v0.0.22
+# Pinned to the tested versions: the generated Caddyfile and the LZ4 patch below depend on them. Other ones with
+#   --build-arg CACHE_HANDLER_VERSION=... --build-arg STORAGES_VERSION=...
 ARG CADDY_VERSION=2.11.7
 
 FROM caddy:${CADDY_VERSION}-builder AS builder
 
-ARG CACHE_HANDLER_VERSION=latest
-ARG STORAGES_VERSION=latest
-RUN xcaddy build \
-    --with github.com/caddyserver/cache-handler@${CACHE_HANDLER_VERSION} \
-    --with github.com/darkweak/storages/otter/caddy@${STORAGES_VERSION} \
-    --with github.com/darkweak/storages/redis/caddy@${STORAGES_VERSION}
+ARG CACHE_HANDLER_VERSION=v0.17.0
+ARG STORAGES_VERSION=v0.0.22
+
+# The storages compress each response with the default LZ4 block size (4 MB): every cache hit then allocates
+# and clears a 4 MB buffer to read a page of a few KB. Patch the writers to 64 KB blocks (fails if not found).
+RUN set -e; \
+    for storage in otter redis; do \
+        dir=$(go mod download -json github.com/darkweak/storages/$storage@$STORAGES_VERSION \
+            | sed -n 's/^\t"Dir": "\(.*\)",$/\1/p'); \
+        cp -r "$dir" /tmp/$storage; chmod -R u+w /tmp/$storage; \
+        grep -q 'writer := lz4.NewWriter(compressed)' /tmp/$storage/$storage.go; \
+        sed -i 's/writer := lz4.NewWriter(compressed)/&\n\t_ = writer.Apply(lz4.BlockSizeOption(lz4.Block64Kb))/' \
+            /tmp/$storage/$storage.go; \
+    done; \
+    xcaddy build \
+        --with github.com/caddyserver/cache-handler@$CACHE_HANDLER_VERSION \
+        --with github.com/darkweak/storages/otter/caddy@$STORAGES_VERSION \
+        --with github.com/darkweak/storages/redis/caddy@$STORAGES_VERSION \
+        --replace github.com/darkweak/storages/otter=/tmp/otter \
+        --replace github.com/darkweak/storages/redis=/tmp/redis
 
 FROM caddy:${CADDY_VERSION}
 
