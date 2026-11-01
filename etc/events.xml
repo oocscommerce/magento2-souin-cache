@@ -5,7 +5,7 @@
  * See LICENSE.txt for license details.
  */
 -->
-<!-- Same events as Magento_CacheInvalidate (Varnish) -->
+<!-- Same events as Magento_CacheInvalidate (Varnish); admin controller events are in adminhtml/events.xml -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="clean_cache_by_tags">
         <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
@@ -33,21 +33,6 @@
     </event>
     <event name="assign_theme_to_stores_after">
         <observer name="oocs_souin_cache_flush_all" instance="OOCS\SouinCache\Observer\FlushAllObserver"/>
-    </event>
-    <event name="controller_action_postdispatch_adminhtml_system_currency_saveRates">
-        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
-    </event>
-    <event name="controller_action_postdispatch_adminhtml_system_config_save">
-        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
-    </event>
-    <event name="controller_action_postdispatch_adminhtml_catalog_product_action_attribute_save">
-        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
-    </event>
-    <event name="controller_action_postdispatch_adminhtml_catalog_product_massStatus">
-        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
-    </event>
-    <event name="controller_action_postdispatch_adminhtml_system_currencysymbol_save">
-        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
     </event>
     <event name="clean_cache_after_reindex">
         <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>

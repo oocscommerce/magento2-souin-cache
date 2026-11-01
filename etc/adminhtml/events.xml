@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © OOCS Commerce (https://www.oocscommerce.com).
+ * See LICENSE.txt for license details.
+ */
+-->
+<!-- Admin controller events of Magento_CacheInvalidate. They carry no "object", so InvalidateObserver
+     does nothing for them (as InvalidateVarnishObserver in core) -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_postdispatch_adminhtml_system_currency_saveRates">
+        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
+    </event>
+    <event name="controller_action_postdispatch_adminhtml_system_config_save">
+        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
+    </event>
+    <event name="controller_action_postdispatch_adminhtml_catalog_product_action_attribute_save">
+        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
+    </event>
+    <event name="controller_action_postdispatch_adminhtml_catalog_product_massStatus">
+        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
+    </event>
+    <event name="controller_action_postdispatch_adminhtml_system_currencysymbol_save">
+        <observer name="oocs_souin_cache_invalidate" instance="OOCS\SouinCache\Observer\InvalidateObserver"/>
+    </event>
+</config>
