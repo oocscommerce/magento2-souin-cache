@@ -139,6 +139,8 @@ class Generator
             if ($password !== '') {
                 $options[] = 'Password ' . $this->quote($password, 'Redis password');
             }
+            // rueidis PINGs every idle connection each Dialer.KeepAlive (1s by default)
+            $options[] = "Dialer {\n\t\t\t\t\tKeepAlive 30s\n\t\t\t\t}";
 
             return "redis {\n\t\t\tconfiguration {\n\t\t\t\t" . implode("\n\t\t\t\t", $options)
                 . "\n\t\t\t}\n\t\t}";
@@ -150,7 +152,8 @@ class Generator
         // Redis alternative, shared by several Caddy nodes: replace the otter block with it
         return "otter {\n\t\t\tconfiguration {\n\t\t\t\tsize " . $size . "\n\t\t\t}\n\t\t}\n"
             . "\t\t# redis {\n\t\t#\tconfiguration {\n\t\t#\t\tInitAddress 127.0.0.1:6379\n"
-            . "\t\t#\t\tSelectDB " . $redisDb . "\n\t\t#\t\t# Password `secret`\n\t\t#\t}\n\t\t# }";
+            . "\t\t#\t\tSelectDB " . $redisDb . "\n\t\t#\t\t# Password `secret`\n"
+            . "\t\t#\t\tDialer {\n\t\t#\t\t\tKeepAlive 30s\n\t\t#\t\t}\n\t\t#\t}\n\t\t# }";
     }
 
     /**

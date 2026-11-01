@@ -15,7 +15,9 @@
     "require": {
         "php": ">=7.2",
         "magento/framework": "*",
+        "magento/module-backend": "*",
         "magento/module-cache-invalidate": "*",
+        "magento/module-config": "*",
         "magento/module-page-cache": "*",
         "magento/module-store": "*"
     },
